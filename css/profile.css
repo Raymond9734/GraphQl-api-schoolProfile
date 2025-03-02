@@ -1,0 +1,119 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-header {
+  background-color: hsla(var(--card), 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsla(var(--border), 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius);
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.profile-header-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.5rem;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.profile-email {
+  color: hsl(var(--muted-foreground));
+}
+
+.profile-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-stat {
+  font-size: 0.875rem;
+}
+
+.profile-progress {
+  width: 16rem;
+}
+
+.profile-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.xp-card {
+  animation: fadeIn 0.5s ease-out 100ms forwards;
+}
+
+.grades-card {
+  animation: fadeIn 0.5s ease-out 200ms forwards;
+}
+
+.activity-card {
+  animation: fadeIn 0.5s ease-out 300ms forwards;
+}
+
+.xp-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grades-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.grade-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+} 
