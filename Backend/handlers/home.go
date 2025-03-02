@@ -11,7 +11,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	temp, err := template.ParseFiles("FrontEnd/index.html")
 	if err != nil {
 		utils.LogError("Error parsing template: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -19,7 +19,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	err = temp.Execute(w, nil)
 	if err != nil {
 		utils.LogError("Error executing template: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 }
