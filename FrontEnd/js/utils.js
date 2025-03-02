@@ -6,20 +6,20 @@ let toastIdCounter = 0;
 
 function createToast({ title, description, variant = "default" }) {
   const id = toastIdCounter++;
-  const toast = document.createElement("div");
-  toast.className = `toast ${
-    variant === "destructive" ? "toast-destructive" : ""
-  }`;
-  toast.dataset.id = id;
-
-  toast.innerHTML = `
-    <div>
-      ${title ? `<div class="toast-title">${title}</div>` : ""}
-      ${
-        description ? `<div class="toast-description">${description}</div>` : ""
-      }
+  const toastTemplate = `
+    <div class="toast-item ${
+      variant === "destructive" ? "toast-item--destructive" : ""
+    }" data-id="${id}">
+      <div class="toast-item__content">
+        ${title ? `<div class="toast-item__title">${title}</div>` : ""}
+        ${
+          description
+            ? `<div class="toast-item__description">${description}</div>`
+            : ""
+        }
+      </div>
+      <button class="toast-item__close" aria-label="Close">&times;</button>
     </div>
-    <button class="toast-close" aria-label="Close">&times;</button>
   `;
 
   // Get or create toast container
@@ -30,13 +30,16 @@ function createToast({ title, description, variant = "default" }) {
     document.body.appendChild(toastContainer);
   }
 
-  toastContainer.appendChild(toast);
-  toasts.push({ id, element: toast });
+  toastContainer.insertAdjacentHTML("beforeend", toastTemplate);
+  const toastElement = toastContainer.lastElementChild;
+  toasts.push({ id, element: toastElement });
 
   // Add close button event listener
-  toast.querySelector(".toast-close").addEventListener("click", () => {
-    dismissToast(id);
-  });
+  toastElement
+    .querySelector(".toast-item__close")
+    .addEventListener("click", () => {
+      dismissToast(id);
+    });
 
   // Auto dismiss after 5 seconds
   setTimeout(() => dismissToast(id), 5000);
@@ -45,14 +48,12 @@ function createToast({ title, description, variant = "default" }) {
 }
 
 function dismissToast(id) {
-  const index = toasts.findIndex((t) => t.id === id);
-  if (index !== -1) {
-    const toast = toasts[index].element;
-    toast.style.opacity = "0";
-    toast.style.transform = "translateX(100%)";
+  const toast = toasts.find((t) => t.id === id);
+  if (toast) {
+    toast.element.classList.add("toast-item--dismissing");
     setTimeout(() => {
-      toast.remove();
-      toasts.splice(index, 1);
+      toast.element.remove();
+      toasts.splice(toasts.indexOf(toast), 1);
     }, 300);
   }
 }
@@ -65,20 +66,16 @@ function navigateTo(path) {
 
 // Format numbers with commas
 function formatNumber(num) {
-  return num.toLocaleString();
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 // Create a progress bar element
 function createProgress(value) {
-  const progress = document.createElement("div");
-  progress.className = "progress";
-
-  const progressValue = document.createElement("div");
-  progressValue.className = "progress-value";
-  progressValue.style.width = `${value}%`;
-
-  progress.appendChild(progressValue);
-  return progress;
+  return `
+    <div class="progress-bar">
+      <div class="progress-bar__value" style="width: ${value}%"></div>
+    </div>
+  `;
 }
 
 // Create SVG element and helpers for charts
@@ -96,10 +93,10 @@ function createSVGElement(type) {
 
 // Calculate date ranges
 function getDateRange(days) {
-  const now = new Date();
+  const end = new Date();
   const start = new Date();
-  start.setDate(now.getDate() - days);
-  return { start, end: now };
+  start.setDate(start.getDate() - days);
+  return { start, end };
 }
 
 export {
