@@ -1,6 +1,7 @@
 // Authentication utilities
 
-import { navigateTo } from "../utils.js";
+import { createToast, navigateTo } from "../utils.js";
+import { GRAPHQL_URL } from "../utils.js";
 
 const DOMAIN = "learn.zone01kisumu.ke";
 
@@ -92,6 +93,27 @@ async function authenticatedFetch(url, options = {}) {
   }
 }
 
+async function fetchData(query) {
+  const response = await authenticatedFetch(GRAPHQL_URL, {
+    method: "POST",
+    body: JSON.stringify(query),
+  });
+
+  const data = await response.json();
+
+  if (data.errors) {
+    createToast({
+      title: "Error",
+      description: data.errors[0].message,
+      variant: "destructive",
+    });
+    console.error("Error fetching data:", data.errors[0].message);
+    return null;
+  }
+
+  return data;
+}
+
 function isAuthenticated() {
   return localStorage.getItem("isAuthenticated") === "true";
 }
@@ -106,4 +128,11 @@ function getToken() {
   return localStorage.getItem("token");
 }
 
-export { authenticate, isAuthenticated, logout, getToken, authenticatedFetch };
+export {
+  authenticate,
+  isAuthenticated,
+  logout,
+  getToken,
+  authenticatedFetch,
+  fetchData,
+};
