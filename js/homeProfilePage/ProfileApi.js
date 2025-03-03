@@ -1,3 +1,6 @@
+import { authenticatedFetch } from "../auth/auth.js";
+import { GRAPHQL_URL } from "../utils.js";
+
 // User data
 const userData = {
   firstName: "Jane",
@@ -51,11 +54,54 @@ const grades = [
   { id: 3, projectName: "Algorithm Challenge", grade: 78, maxGrade: 100 },
 ];
 // Mock API functions to simulate GraphQL queries
-function getUserData() {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(userData), 1000);
-  });
+async function getUserData() {
+  const data = await fetchUserData();
+  console.log("Processed data", data);
+  return {
+    firstName: data.firstName,
+    lastName: data.lastName,
+    login: data.username,
+    email: data.email,
+    auditRatio: Number(data.auditRatio).toFixed(2),
+    imageUrl: "https://i.pravatar.cc/300",
+    country: data.country,
+  };
 }
+
+const fetchUserData = async () => {
+  const query = {
+    query: `{
+          user {
+              auditRatio
+              login
+              attrs
+              xps {
+                 amount
+              }
+          }
+      }`,
+  };
+
+  const response = await authenticatedFetch(GRAPHQL_URL, {
+    method: "POST",
+    body: JSON.stringify(query),
+  });
+
+  const data = await response.json();
+  console.log(" original data", data);
+  return {
+    auditRatio: data.data.user[0].auditRatio,
+    username: data.data.user[0].login,
+    email: data.data.user[0].attrs.email,
+    firstName: data.data.user[0].attrs.firstName,
+    lastName: data.data.user[0].attrs.lastName,
+    country: data.data.user[0].attrs.country,
+    totalXP: data.data.user[0].xps,
+  };
+};
+
+// const userData1 = await fetchUserData();
+// console.log("userData1", userData1);
 
 function getXPTransactions() {
   return new Promise((resolve) => {
