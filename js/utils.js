@@ -73,8 +73,8 @@ function formatNumber(num) {
 // Create a progress bar element
 function createProgress(value) {
   return `
-    <div class="progress-bar">
-      <div class="progress-bar__value" style="width: ${value}%"></div>
+    <div class="progress">
+      <div class="progress-value" style="width: ${value}%"></div>
     </div>
   `;
 }
