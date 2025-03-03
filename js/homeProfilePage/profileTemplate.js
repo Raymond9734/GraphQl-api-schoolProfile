@@ -4,8 +4,10 @@ import { createAvatar, createCardHeader } from "../components/components.js";
 function createProfileCards(user, transactions, grades) {
   return `
         <div class="profile-cards-grid">
-          ${createXPCard(user, transactions)}
-          ${createGradesCard(grades)}
+          <div class="profile-cards-row">
+            ${createXPCard(user, transactions)}
+            ${createGradesCard(grades)}
+          </div>
           ${createActivityCard(transactions)}
         </div>
       `;
@@ -45,9 +47,8 @@ function createGradesCard(grades) {
       <div class="grades-card glass-card">
         ${createCardHeader("Recent Grades")}
         <div class="card-content">
-          <div class="grades-list">
+          <div class="grades-list scrollable-list">
             ${grades
-              .slice(0, 3)
               .map(
                 (grade) => `
               <div class="grade-item">
@@ -96,16 +97,15 @@ function createActivityCard(transactions) {
     `;
 }
 
-//use transaction table 
+//use transaction table
 function createXPCard(user, transactions) {
   return `
       <div class="xp-card glass-card">
         ${createCardHeader("Experience Points")}
         <div class="card-content">
           <div class="xp-value">${formatNumber(user.totalXP)} XP</div>
-          <div class="transactions-list">
+          <div class="transactions-list scrollable-list">
             ${transactions
-              .slice(0, 3)
               .map(
                 (tx) => `
               <div class="transaction-item">
