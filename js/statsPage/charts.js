@@ -149,12 +149,11 @@ function createBarChart(data, xKey, yKey, width = 100, height = 300) {
               return `
               <rect 
                 x="${x}" 
-                y="${height - padding}" 
+                y="${y}"
                 width="${barWidth}" 
-                height="0" 
+                height="${barHeight}"
                 class="chart__bar" 
                 style="animation: barGrow 0.5s ease-out ${i * 0.1}s forwards"
-                data-target-height="${barHeight}"
               >
                 <title>${d[xKey]}: ${d[yKey]}</title>
               </rect>
