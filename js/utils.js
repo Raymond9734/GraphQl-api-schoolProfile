@@ -100,6 +100,19 @@ function getDateRange(days) {
   return { start, end };
 }
 
+function GetSixMonthsAgoDate() {
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  return sixMonthsAgo.toISOString();
+
+}
+// Function to extract project name from path
+function extractProjectName(path) {
+  if (!path) return "Unknown Project";
+  const pathParts = path.split("/");
+  return pathParts[pathParts.length - 1];
+}
+
 export {
   createToast,
   navigateTo,
@@ -108,4 +121,6 @@ export {
   createSVG,
   createSVGElement,
   getDateRange,
+  GetSixMonthsAgoDate,
+  extractProjectName,
 };
