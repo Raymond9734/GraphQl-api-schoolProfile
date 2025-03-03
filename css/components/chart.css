@@ -41,12 +41,12 @@
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+
 .chart__bar {
   fill: hsl(var(--primary));
-  rx: 2;
-  transition: y 0.5s ease-out, height 0.5s ease-out;
+  transition: opacity 0.3s ease-out;
+ 
 }
-
 .chart__bar:hover {
   opacity: 0.8;
 }
@@ -68,8 +68,14 @@
 }
 
 @keyframes barGrow {
-  from { height: 0; }
-  to { height: attr(data-target-height px); }
+  from { 
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to { 
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
 }
 
 @keyframes fadeIn {
