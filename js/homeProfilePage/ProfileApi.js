@@ -1,5 +1,6 @@
-import { authenticatedFetch, fetchData } from "../auth/auth.js";
-import { GRAPHQL_URL } from "../utils.js";
+import { fetchData } from "../auth/auth.js";
+import { GetSixMonthsAgoDate ,extractProjectName} from "../utils.js";
+
 
 let totalXP = 0;
 // User data
@@ -27,50 +28,21 @@ const xpTransactionsQuery = {
       }`,
 };
 
-// XP transactions
-const xpTransactions = [
-  {
-    id: 1,
-    projectName: "Web Development Project",
-    amount: 850,
-    createdAt: "2023-06-15",
-  },
-  {
-    id: 2,
-    projectName: "Database Design",
-    amount: 750,
-    createdAt: "2023-06-10",
-  },
-  {
-    id: 3,
-    projectName: "Algorithm Challenge",
-    amount: 500,
-    createdAt: "2023-06-05",
-  },
-  {
-    id: 4,
-    projectName: "UI/UX Workshop",
-    amount: 350,
-    createdAt: "2023-05-28",
-  },
-  {
-    id: 5,
-    projectName: "Mobile App Development",
-    amount: 950,
-    createdAt: "2023-05-20",
-  },
-];
+const date = GetSixMonthsAgoDate();
 
-// Grades
-const grades = [
-  { id: 1, projectName: "Web Development Project", grade: 85, maxGrade: 100 },
-  { id: 2, projectName: "Database Design", grade: 92, maxGrade: 100 },
-  { id: 3, projectName: "Algorithm Challenge", grade: 78, maxGrade: 100 },
-];
-// Mock API functions to simulate GraphQL queries
+const gradeQuery = {
+  query:`{
+    progress(where: { isDone: { _eq: true }, updatedAt: { _gt: "${date}" } }) {
+      path
+      grade
+      isDone
+      updatedAt
+    }
+  }
+`};
+
 async function getUserData() {
   const data = await fetchData(userDataQuery);
-  console.log("Processed data", data);
 
   // Get the latest XP transactions to calculate total XP
   const transactions = await getXPTransactions();
@@ -101,12 +73,6 @@ async function getXPTransactions() {
   return processedTransactions;
 }
 
-// Function to extract project name from path
-function extractProjectName(path) {
-  if (!path) return "Unknown Project";
-  const pathParts = path.split("/");
-  return pathParts[pathParts.length - 1];
-}
 
 // Function to process and sort transactions
 function processTransactions(transactions) {
@@ -134,10 +100,37 @@ async function getTotalXP() {
   return calculateTotalXP(transactions);
 }
 
-function getGrades() {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(grades), 1000);
+// Function to filter grades, excluding paths containing "checkpoint" or "piscine"
+function filterGrades(grades) {
+  if (!grades || !Array.isArray(grades)) return [];
+
+  return grades.filter(grade => 
+      !grade.path.includes("checkpoint") 
+  );
+}
+
+// Function to sort grades from newest to oldest based on the "updatedAt" field
+function sortGradesByDate(grades) {
+  if (!grades || !Array.isArray(grades)) return [];
+
+  return grades.sort((a, b) => {
+      const dateA = new Date(a.updatedAt);
+      const dateB = new Date(b.updatedAt);
+      return dateB - dateA; // Sorts in descending order (newest first)
   });
+}
+
+async function getGrades() {
+  const gradesData = await fetchData(gradeQuery);
+
+  if (!gradesData || !gradesData.data || !gradesData.data.progress) {
+    return [];
+  }
+
+  const filteredGrades = filterGrades(gradesData.data.progress); 
+
+  const sortedGrades = sortGradesByDate(filteredGrades);
+  return sortedGrades
 }
 
 export { getUserData, getXPTransactions, getGrades, getTotalXP };
