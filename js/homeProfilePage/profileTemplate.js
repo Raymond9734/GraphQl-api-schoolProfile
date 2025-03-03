@@ -25,10 +25,10 @@ function createProfileHeader(user) {
             <p class="profile-email">${user.email}</p>
             <div class="profile-stats">
               <div class="profile-stat">
-                Level <span class="font-bold">${user.level}</span>
+                <span class="font-bold">${user.country}</span>
               </div>
               <div class="profile-stat">
-                Rank <span class="font-bold">#${user.rank}</span>
+                Audit Ratio <span class="font-bold">${user.auditRatio}</span>
               </div>
             </div>
             <div class="profile-progress">
@@ -96,6 +96,7 @@ function createActivityCard(transactions) {
     `;
 }
 
+//use transaction table 
 function createXPCard(user, transactions) {
   return `
       <div class="xp-card glass-card">
