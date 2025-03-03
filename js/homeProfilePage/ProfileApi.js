@@ -1,16 +1,30 @@
-import { authenticatedFetch } from "../auth/auth.js";
+import { authenticatedFetch, fetchData } from "../auth/auth.js";
 import { GRAPHQL_URL } from "../utils.js";
 
+let totalXP = 0;
 // User data
-const userData = {
-  firstName: "Jane",
-  lastName: "Smith",
-  login: "jsmith42",
-  email: "demo@school.edu",
-  imageUrl: "https://i.pravatar.cc/300",
-  totalXP: 12450,
-  level: 8,
-  rank: 42,
+const userDataQuery = {
+  query: `{
+        user {
+            auditRatio
+            login
+            attrs
+            xps {
+               amount
+            }
+        }
+    }`,
+};
+
+const xpTransactionsQuery = {
+  query: `{
+        transaction(where: { type: { _eq: "xp" } }) {
+          path
+          amount
+          type
+          createdAt
+        }
+      }`,
 };
 
 // XP transactions
@@ -55,58 +69,69 @@ const grades = [
 ];
 // Mock API functions to simulate GraphQL queries
 async function getUserData() {
-  const data = await fetchUserData();
+  const data = await fetchData(userDataQuery);
   console.log("Processed data", data);
+
+  // Get the latest XP transactions to calculate total XP
+  const transactions = await getXPTransactions();
+  const totalXP = calculateTotalXP(transactions);
+
   return {
-    firstName: data.firstName,
-    lastName: data.lastName,
-    login: data.username,
-    email: data.email,
-    auditRatio: Number(data.auditRatio).toFixed(2),
+    firstName: data.data.user[0].attrs.firstName,
+    lastName: data.data.user[0].attrs.lastName,
+    login: data.data.user[0].login,
+    email: data.data.user[0].attrs.email,
+    auditRatio: Number(data.data.user[0].auditRatio).toFixed(2),
     imageUrl: "https://i.pravatar.cc/300",
-    country: data.country,
+    country: data.data.user[0].attrs.country,
+    totalXP: totalXP,
   };
 }
 
-const fetchUserData = async () => {
-  const query = {
-    query: `{
-          user {
-              auditRatio
-              login
-              attrs
-              xps {
-                 amount
-              }
-          }
-      }`,
-  };
+async function getXPTransactions() {
+  const xpData = await fetchData(xpTransactionsQuery);
 
-  const response = await authenticatedFetch(GRAPHQL_URL, {
-    method: "POST",
-    body: JSON.stringify(query),
-  });
+  if (!xpData || !xpData.data || !xpData.data.transaction) {
+    return [];
+  }
 
-  const data = await response.json();
-  console.log(" original data", data);
-  return {
-    auditRatio: data.data.user[0].auditRatio,
-    username: data.data.user[0].login,
-    email: data.data.user[0].attrs.email,
-    firstName: data.data.user[0].attrs.firstName,
-    lastName: data.data.user[0].attrs.lastName,
-    country: data.data.user[0].attrs.country,
-    totalXP: data.data.user[0].xps,
-  };
-};
+  // Process the transactions
+  const processedTransactions = processTransactions(xpData.data.transaction);
 
-// const userData1 = await fetchUserData();
-// console.log("userData1", userData1);
+  return processedTransactions;
+}
 
-function getXPTransactions() {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(xpTransactions), 1000);
-  });
+// Function to extract project name from path
+function extractProjectName(path) {
+  if (!path) return "Unknown Project";
+  const pathParts = path.split("/");
+  return pathParts[pathParts.length - 1];
+}
+
+// Function to process and sort transactions
+function processTransactions(transactions) {
+  if (!transactions || !Array.isArray(transactions)) return [];
+
+  return transactions
+    .map((transaction) => ({
+      ...transaction,
+      projectName: extractProjectName(transaction.path),
+    }))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+// Rename getTotalXP to calculateTotalXP and make it synchronous
+function calculateTotalXP(transactions) {
+  return transactions.reduce(
+    (total, transaction) => total + transaction.amount,
+    0
+  );
+}
+
+// Add a new function to get just the total XP
+async function getTotalXP() {
+  const transactions = await getXPTransactions();
+  return calculateTotalXP(transactions);
 }
 
 function getGrades() {
@@ -115,4 +140,4 @@ function getGrades() {
   });
 }
 
-export { getUserData, getXPTransactions, getGrades };
+export { getUserData, getXPTransactions, getGrades, getTotalXP };
