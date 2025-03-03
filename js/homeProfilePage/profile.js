@@ -5,7 +5,7 @@ import {
   setupNavigationEvents,
 } from "../components/components.js";
 import { createProfileHeader, createProfileCards } from "./profileTemplate.js";
-import { createToast } from "../utils.js";
+import { createToast, navigateTo } from "../utils.js";
 
 // Render the profile page
 async function renderProfile() {
@@ -48,6 +48,7 @@ function handleProfileError(error) {
   const root = document.getElementById("root");
   root.innerHTML = "";
 
+  navigateTo("/500");
   // Redirect to login if authentication error
   if (error.message?.includes("authentication") || error.status === 401) {
     logout();
