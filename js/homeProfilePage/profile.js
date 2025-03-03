@@ -1,4 +1,9 @@
-import { getUserData, getXPTransactions, getGrades } from "./ProfileApi.js";
+import {
+  getUserData,
+  getXPTransactions,
+  getGrades,
+  getSkills,
+} from "./ProfileApi.js";
 import {
   createLoadingSpinner,
   createLayout,
@@ -15,15 +20,16 @@ async function renderProfile() {
   root.innerHTML = createLoadingSpinner();
 
   try {
-    const [user, transactions, grades] = await Promise.all([
+    const [user, transactions, grades, skills] = await Promise.all([
       getUserData(),
       getXPTransactions(),
       getGrades(),
+      getSkills(),
     ]);
 
     const content = `
         <div class="profile-container">
-          ${createProfileHeader(user)}
+          ${createProfileHeader(user, skills)}
           ${createProfileCards(user, transactions, grades)}
         </div>
       `;
