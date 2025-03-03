@@ -1,4 +1,4 @@
-import { formatNumber, createProgress } from "../utils.js";
+import { formatNumber, createProgress,extractProjectName } from "../utils.js";
 import { createAvatar, createCardHeader } from "../components/components.js";
 
 function createProfileCards(user, transactions, grades) {
@@ -44,27 +44,40 @@ function createProfileHeader(user) {
 
 function createGradesCard(grades) {
   return `
-      <div class="grades-card glass-card">
-        ${createCardHeader("Recent Grades")}
-        <div class="card-content">
-          <div class="grades-list scrollable-list">
-            ${grades
-              .map(
-                (grade) => `
-              <div class="grade-item">
-                <div class="grade-header">
-                  <span class="text-sm font-medium">${grade.projectName}</span>
-                  <span class="text-sm">${grade.grade}/${grade.maxGrade}</span>
+    <div class="grades-card glass-card">
+      ${createCardHeader("Recent Grades")}
+      <div class="card-content">
+        <div class="grades-list scrollable-list">
+          ${grades
+            .map((grade) => {
+              // Normalize the grade: If grade > 1, set it to 1
+              const normalizedGrade = Math.min(grade.grade, 1);
+
+              // Hard-code maxGrade to 1
+              const maxGrade = 1;
+
+              const normalizedGradeOutOfAHundred = (normalizedGrade / maxGrade) * 100;
+
+              
+
+              // Extract project name using the provided function
+              const projectName = extractProjectName(grade.path);
+
+              return `
+                <div class="grade-item">
+                  <div class="grade-header">
+                    <span class="text-sm font-medium">${projectName}</span>
+                    <span class="text-sm">${normalizedGradeOutOfAHundred}/100</span>
+                  </div>
+                  ${createProgress((normalizedGrade / maxGrade) * 100)}
                 </div>
-                ${createProgress((grade.grade / grade.maxGrade) * 100)}
-              </div>
-            `
-              )
-              .join("")}
-          </div>
+              `;
+            })
+            .join("")}
         </div>
       </div>
-    `;
+    </div>
+  `;
 }
 
 function createActivityCard(transactions) {
