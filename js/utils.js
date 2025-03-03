@@ -2,6 +2,8 @@
 const toasts = [];
 let toastIdCounter = 0;
 
+export const GRAPHQL_URL = `https://learn.zone01kisumu.ke/api/graphql-engine/v1/graphql`;
+
 function createToast({ title, description, variant = "default" }) {
   const id = toastIdCounter++;
   const toastTemplate = `
@@ -33,11 +35,9 @@ function createToast({ title, description, variant = "default" }) {
   toasts.push({ id, element: toastElement });
 
   // Add close button event listener
-  toastElement
-    .querySelector(".toast-close")
-    .addEventListener("click", () => {
-      dismissToast(id);
-    });
+  toastElement.querySelector(".toast-close").addEventListener("click", () => {
+    dismissToast(id);
+  });
 
   // Auto dismiss after 5 seconds
   setTimeout(() => dismissToast(id), 5000);
@@ -64,6 +64,9 @@ function navigateTo(path) {
 
 // Format numbers with commas
 function formatNumber(num) {
+  if (num === undefined || num === null) {
+    return "0"; // Return "0" for undefined or null values
+  }
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
