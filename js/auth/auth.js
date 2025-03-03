@@ -15,6 +15,7 @@ async function authenticate(credentials) {
       // Store token in localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("isAuthenticated", "true");
+      console.log("The token", token);
       return token;
     } else {
       throw new Error("Authentication failed");
@@ -27,7 +28,7 @@ async function authenticate(credentials) {
 async function getJWT(identifier, password) {
   // Encode credentials in Base64
   const credentials = btoa(`${identifier}:${password}`);
-  
+
   // Set headers
   const headers = {
     Authorization: `Basic ${credentials}`,
@@ -52,6 +53,45 @@ async function getJWT(identifier, password) {
   }
 }
 
+async function authenticatedFetch(url, options = {}) {
+  // Get the JWT token
+  const token = getToken();
+
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
+
+  // Merge headers with JWT authorization
+  const headers = {
+    ...options.headers,
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    // Handle 401 Unauthorized responses
+    if (response.status === 401) {
+      logout(); // Clear auth and redirect to login
+      throw new Error("Authentication expired");
+    }
+
+    // Handle other error responses
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Authenticated fetch failed:", error);
+    throw error;
+  }
+}
+
 function isAuthenticated() {
   return localStorage.getItem("isAuthenticated") === "true";
 }
@@ -66,4 +106,4 @@ function getToken() {
   return localStorage.getItem("token");
 }
 
-export { authenticate, isAuthenticated, logout, getToken };
+export { authenticate, isAuthenticated, logout, getToken, authenticatedFetch };
