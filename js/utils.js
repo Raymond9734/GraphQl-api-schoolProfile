@@ -104,13 +104,44 @@ function GetSixMonthsAgoDate() {
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
   return sixMonthsAgo.toISOString();
-
 }
 // Function to extract project name from path
 function extractProjectName(path) {
   if (!path) return "Unknown Project";
   const pathParts = path.split("/");
   return pathParts[pathParts.length - 1];
+}
+
+// Rename getTotalXP to calculateTotalXP and make it synchronous
+function calculateTotalXP(transactions) {
+  return transactions.reduce(
+    (total, transaction) => total + transaction.amount,
+    0
+  );
+}
+
+// Add a new function to get just the total XP
+async function getTotalXP() {
+  const transactions = await getXPTransactions();
+  return calculateTotalXP(transactions);
+}
+
+// Function to filter grades, excluding paths containing "checkpoint" or "piscine"
+function filterGrades(grades) {
+  if (!grades || !Array.isArray(grades)) return [];
+
+  return grades.filter((grade) => !grade.path.includes("checkpoint"));
+}
+
+// Function to sort grades from newest to oldest based on the "updatedAt" field
+function sortGradesByDate(grades) {
+  if (!grades || !Array.isArray(grades)) return [];
+
+  return grades.sort((a, b) => {
+    const dateA = new Date(a.updatedAt);
+    const dateB = new Date(b.updatedAt);
+    return dateB - dateA; // Sorts in descending order (newest first)
+  });
 }
 
 export {
@@ -123,4 +154,8 @@ export {
   getDateRange,
   GetSixMonthsAgoDate,
   extractProjectName,
+  calculateTotalXP,
+  getTotalXP,
+  filterGrades,
+  sortGradesByDate,
 };
