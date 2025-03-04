@@ -13,6 +13,7 @@ async function authenticate(credentials) {
     const token = await getJWT(credentials.identifier, credentials.password);
 
     if (token) {
+      console.log("The token", token);
       const expirationTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours in milliseconds
       localStorage.setItem("token", token);
       localStorage.setItem("tokenExpiration", expirationTime.toString());
