@@ -13,10 +13,11 @@ async function authenticate(credentials) {
     const token = await getJWT(credentials.identifier, credentials.password);
 
     if (token) {
-      // Store token in localStorage
+      const expirationTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours in milliseconds
       localStorage.setItem("token", token);
+      localStorage.setItem("tokenExpiration", expirationTime.toString());
       localStorage.setItem("isAuthenticated", "true");
-      console.log("The token", token);
+
       return token;
     } else {
       throw new Error("Authentication failed");
@@ -43,11 +44,17 @@ async function getJWT(identifier, password) {
     });
 
     const token = await response.json();
+    // console.log("The token", token);
 
     if (response.ok) {
-      return token; // Return the JWT token
+      return token;
     } else {
-      throw new Error(token.message || "Invalid credentials");
+      createToast({
+        title: "Login failed",
+        description: token.error || "Invalid credentials",
+        variant: "destructive",
+      });
+      throw new Error(token.error || "Invalid credentials");
     }
   } catch (error) {
     console.error("Request failed:", error);
@@ -55,10 +62,17 @@ async function getJWT(identifier, password) {
 }
 
 async function authenticatedFetch(url, options = {}) {
+  // Check token expiration before making request
+  if (!isAuthenticated()) {
+    logout();
+    throw new Error("Authentication expired");
+  }
+
   // Get the JWT token
   const token = getToken();
 
   if (!token) {
+    logout();
     throw new Error("No authentication token found");
   }
 
@@ -115,12 +129,31 @@ async function fetchData(query) {
 }
 
 function isAuthenticated() {
-  return localStorage.getItem("isAuthenticated") === "true";
+  const token = getToken();
+  const expiration = localStorage.getItem("tokenExpiration");
+
+  if (!token || !expiration) return false;
+
+  try {
+    const expirationTime = parseInt(expiration);
+    const currentTime = Date.now();
+
+    if (currentTime >= expirationTime) {
+      logout(); // Token has expired, log out the user
+      return false;
+    }
+
+    return localStorage.getItem("isAuthenticated") === "true";
+  } catch (error) {
+    console.error("Error checking authentication:", error);
+    return false;
+  }
 }
 
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("isAuthenticated");
+  localStorage.removeItem("tokenExpiration");
   navigateTo("/login");
 }
 
