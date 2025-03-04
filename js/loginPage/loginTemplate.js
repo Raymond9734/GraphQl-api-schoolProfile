@@ -32,9 +32,6 @@ function LoginTemplate() {
                 Sign In
               </button>
             </form>
-            <p class="auth-form__help-text text-muted text-center mt-4">
-              Demo credentials: demo@school.edu / demo123
-            </p>
           </div>
         </div>
       </div>
