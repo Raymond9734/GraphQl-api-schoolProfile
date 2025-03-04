@@ -59,7 +59,7 @@ async function getUserData() {
     login: data.data.user[0].login,
     email: data.data.user[0].attrs.email,
     auditRatio: Number(data.data.user[0].auditRatio).toFixed(2),
-    imageUrl: "https://i.pravatar.cc/300",
+    imageUrl: "/images/o1ProfilePhoto.jpeg",
     country: data.data.user[0].attrs.country,
     totalXP: totalXP,
   };
@@ -103,15 +103,25 @@ async function getGrades() {
   return sortedGrades;
 }
 
-function getSkills() {
-  const skills = [
-    { name: "Go", progress: 85 },
-    { name: "JavaScript", progress: 75 },
-    { name: "HTML/CSS", progress: 90 },
-    { name: "Docker", progress: 60 },
-    { name: "SQL", progress: 70 },
-  ];
-  return skills;
+async function getRegistrations() {
+  const registrationsQuery = {
+    query: `{
+      registration {
+        path
+        createdAt
+        startAt
+        endAt
+        eventJoinedAt
+        object {
+          name
+        }
+        campus
+      }
+    }`,
+  };
+
+  const data = await fetchData(registrationsQuery);
+  return data?.data?.registration || [];
 }
 
 export {
@@ -119,6 +129,5 @@ export {
   getXPTransactions,
   getGrades,
   getTotalXP,
-  getSkills,
-  xpTransactionsQuery,
+  getRegistrations,
 };
