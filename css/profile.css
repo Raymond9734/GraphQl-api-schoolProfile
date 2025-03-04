@@ -266,7 +266,7 @@
 
 @media (min-width: 768px) {
   .avatar {
-    width: 150px;  /* Larger size for desktop */
-    height: 150px;
+    width: 300px;  /* Larger size for desktop */
+    height: 300px;
   }
 } 
