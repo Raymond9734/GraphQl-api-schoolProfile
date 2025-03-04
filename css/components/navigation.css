@@ -74,4 +74,10 @@
 .navigation__logout:hover {
   background-color: hsla(var(--destructive), 0.1);
   color: hsl(var(--destructive));
+}
+
+.navigation__logout svg {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
 } 
