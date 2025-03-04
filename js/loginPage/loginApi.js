@@ -29,11 +29,7 @@ export async function handleLoginSubmit(event, submitButton) {
     });
     navigateTo("/");
   } catch (error) {
-    createToast({
-      title: "Login failed",
-      description: "Please check your credentials and try again.",
-      variant: "destructive",
-    });
+    console.error(error);
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Sign In";
