@@ -1,6 +1,7 @@
 import {
   createLayout,
   createLoadingSpinner,
+  setupNavigationEvents,
 } from "../components/components.js";
 import { getXPOverTime, getProjectXP, getWeeklyActivity } from "./statsApi.js";
 import { createChartSection } from "./charts.js";
@@ -56,6 +57,7 @@ async function renderStats() {
 
     // Update the page content
     root.innerHTML = createLayout(content);
+    setupNavigationEvents();
   } catch (error) {
     console.error("Error loading statistics data:", error);
     createToast({
