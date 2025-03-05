@@ -14,22 +14,24 @@ const userDataQuery = {
             auditRatio
             login
             attrs
-            xps {
-               amount
-            }
         }
     }`,
 };
 
 const xpTransactionsQuery = {
   query: `{
-        transaction(where: { type: { _eq: "xp" } }) {
-          path
-          amount
-          type
-          createdAt
-        }
-      }`,
+          transaction(where: { 
+            _and: [
+              { type: { _eq: "xp" } },
+              { eventId: { _eq: 75 } }
+            ]
+          }) {
+            path
+            amount
+            type
+            createdAt
+          }
+        }`,
 };
 
 const date = GetSixMonthsAgoDate();
