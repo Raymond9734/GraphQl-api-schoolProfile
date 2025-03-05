@@ -5,7 +5,7 @@ import {
 } from "../components/components.js";
 import { getXPOverTime, getProjectXP, getWeeklyActivity } from "./statsApi.js";
 import { createChartSection } from "./charts.js";
-import { createToast } from "../utils.js";
+import { createToast, navigateTo } from "../utils.js";
 import { logout } from "../auth/auth.js";
 
 // Render the stats page
@@ -16,10 +16,13 @@ async function renderStats() {
   root.innerHTML = createLoadingSpinner();
 
   try {
-    // Fetch data
-    const xpOverTime = await getXPOverTime();
-    const projectXP = await getProjectXP();
-    const weeklyActivity = await getWeeklyActivity();
+
+    const [xpOverTime, projectXP, weeklyActivity] = await Promise.all(
+      getXPOverTime(),
+      getProjectXP(),
+      getWeeklyActivity(),
+    )
+
 
     const content = `
         <div class="space-y-8">
@@ -59,15 +62,27 @@ async function renderStats() {
     root.innerHTML = createLayout(content);
     setupNavigationEvents();
   } catch (error) {
-    console.error("Error loading statistics data:", error);
-    createToast({
-      title: "Error",
-      description: "Failed to load statistics data.",
-      variant: "destructive",
-    });
+    handleStatError(error)
+  }
+}
 
-    // Redirect to login on error
-    root.innerHTML = "";
+// Add this function after renderProfile
+function handleStatError(error) {
+  console.error("Error loading stat data:", error);
+  createToast({
+    title: "Error",
+    description: "Failed to load stat data. Please try again.",
+    variant: "destructive",
+  });
+
+  // Clear the root element
+  const root = document.getElementById("root");
+  root.innerHTML = "";
+
+  navigateTo("/500");
+
+  // Redirect to login if authentication error
+  if (error.message?.includes("authentication") || error.status === 401) {
     logout();
   }
 }
