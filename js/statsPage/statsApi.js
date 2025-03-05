@@ -112,7 +112,7 @@ async function getProjectXP() {
   }
 }
 
-function getWeeklyActivity() {
+async function getWeeklyActivity() {
   return new Promise((resolve) => {
     setTimeout(() => resolve(weeklyActivity), 1000);
   });
