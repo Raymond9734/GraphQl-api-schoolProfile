@@ -16,13 +16,11 @@ async function renderStats() {
   root.innerHTML = createLoadingSpinner();
 
   try {
-
-    const [xpOverTime, projectXP, weeklyActivity] = await Promise.all(
+    const [xpOverTime, projectXP, weeklyActivity] = await Promise.all([
       getXPOverTime(),
       getProjectXP(),
       getWeeklyActivity(),
-    )
-
+    ]);
 
     const content = `
         <div class="space-y-8">
@@ -62,7 +60,7 @@ async function renderStats() {
     root.innerHTML = createLayout(content);
     setupNavigationEvents();
   } catch (error) {
-    handleStatError(error)
+    handleStatError(error);
   }
 }
 
