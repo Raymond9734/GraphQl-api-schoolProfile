@@ -3,7 +3,7 @@ import {
   createLoadingSpinner,
   setupNavigationEvents,
 } from "../components/components.js";
-import { getXPOverTime, getProjectXP, getWeeklyActivity } from "./statsApi.js";
+import { getXPOverTime, getProjectXP } from "./statsApi.js";
 import { createChartSection } from "./charts.js";
 import { createToast, navigateTo } from "../utils.js";
 import { logout } from "../auth/auth.js";
@@ -19,7 +19,6 @@ async function renderStats() {
     const [xpOverTime, projectXP, weeklyActivity] = await Promise.all([
       getXPOverTime(),
       getProjectXP(),
-      getWeeklyActivity(),
     ]);
 
     const content = `
@@ -45,14 +44,7 @@ async function renderStats() {
             )}
           </div>
   
-          ${createChartSection(
-            "Weekly Activity",
-            "line",
-            weeklyActivity,
-            "day",
-            "hours",
-            "animate-fade-in animation-delay-300"
-          )}
+          
         </div>
       `;
 
