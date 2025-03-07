@@ -9,16 +9,7 @@ const projectXP = [
   { project: "Mobile", xp: 2000 },
 ];
 
-// Weekly activity
-const weeklyActivity = [
-  { day: "Mon", hours: 2.5 },
-  { day: "Tue", hours: 3.2 },
-  { day: "Wed", hours: 4.5 },
-  { day: "Thu", hours: 3.8 },
-  { day: "Fri", hours: 5.1 },
-  { day: "Sat", hours: 1.2 },
-  { day: "Sun", hours: 0.5 },
-];
+
 
 async function getXPOverTime() {
   const xpTransactionsQuery = {
@@ -83,7 +74,7 @@ async function getProjectXP() {
     query: `{
       transaction(
         where: { type: { _eq: "xp" } }
-        order_by: { amount: desc }
+        order_by: { createdAt: desc }
         limit: 5
       ) {
         path
@@ -112,10 +103,6 @@ async function getProjectXP() {
   }
 }
 
-async function getWeeklyActivity() {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(weeklyActivity), 1000);
-  });
-}
 
-export { getXPOverTime, getProjectXP, getWeeklyActivity };
+
+export { getXPOverTime, getProjectXP };
